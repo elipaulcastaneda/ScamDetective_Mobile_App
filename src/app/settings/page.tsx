@@ -284,8 +284,48 @@ export default function SettingsPage() {
           <Button>Save Notification Settings</Button>
         </CardFooter>
       </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle>Privacy and Data</CardTitle>
+          <CardDescription>Manage how your data is used and download your information.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="share-anonymous-data" className="flex flex-col space-y-1">
+              <span>Share Anonymous Data</span>
+              <span className="font-normal leading-snug text-muted-foreground">
+                Help improve our services by allowing us to collect anonymous usage data.
+              </span>
+            </Label>
+            <Switch id="share-anonymous-data" defaultChecked />
+          </div>
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="improve-detection" className="flex flex-col space-y-1">
+              <span>Improve Scam Detection</span>
+              <span className="font-normal leading-snug text-muted-foreground">
+                Allow reported content to be used to train our detection models.
+              </span>
+            </Label>
+            <Switch id="improve-detection" defaultChecked />
+          </div>
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="marketing-emails" className="flex flex-col space-y-1">
+              <span>Marketing Emails</span>
+              <span className="font-normal leading-snug text-muted-foreground">
+                Receive occasional emails about new features and promotions.
+              </span>
+            </Label>
+            <Switch id="marketing-emails" />
+          </div>
+        </CardContent>
+        <CardFooter className="flex-col items-start gap-4">
+          <Button variant="outline">Export My Data</Button>
+          <p className="text-xs text-muted-foreground">
+            You can request an export of your personal data. This process may take up to 24 hours.
+          </p>
+        </CardFooter>
+      </Card>
     </div>
   );
 }
-
-    
