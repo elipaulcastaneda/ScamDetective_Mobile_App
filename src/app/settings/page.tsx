@@ -1,5 +1,6 @@
 "use client"
 
+import { useEffect, useState } from "react";
 import { useTheme } from "next-themes";
 import { Button } from "@/components/ui/button";
 import {
@@ -18,6 +19,12 @@ import { Switch } from "@/components/ui/switch";
 
 export default function SettingsPage() {
   const { setTheme, theme } = useTheme()
+  const [mounted, setMounted] = useState(false)
+
+  useEffect(() => {
+    setMounted(true)
+  }, [])
+
 
   return (
     <div className="space-y-8">
@@ -57,8 +64,9 @@ export default function SettingsPage() {
         <CardContent className="space-y-6">
           <div className="space-y-2">
             <Label>Theme</Label>
+            {mounted && (
             <RadioGroup
-              defaultValue={theme}
+              value={theme}
               onValueChange={setTheme}
               className="grid max-w-md grid-cols-3 gap-8 pt-2"
             >
@@ -124,6 +132,7 @@ export default function SettingsPage() {
                 </Label>
               </FormItem>
             </RadioGroup>
+            )}
           </div>
           <div className="flex items-center justify-between space-x-2">
             <Label htmlFor="real-time-scanning" className="flex flex-col space-y-1">
