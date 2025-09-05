@@ -16,6 +16,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
 import { Switch } from "@/components/ui/switch";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 
 export default function SettingsPage() {
   const { setTheme, theme } = useTheme()
@@ -189,14 +190,47 @@ export default function SettingsPage() {
             </RadioGroup>
             )}
           </div>
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="real-time-scanning" className="flex flex-col space-y-1">
-              <span>Enable Real-time Scanning</span>
-              <span className="font-normal leading-snug text-muted-foreground">
-                Automatically scan content when using the browser extension.
-              </span>
-            </Label>
-            <Switch id="real-time-scanning" defaultChecked />
+          <Separator />
+          <h3 className="text-lg font-medium">Scanning Preferences</h3>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between space-x-2">
+              <Label htmlFor="auto-scanning" className="flex flex-col space-y-1">
+                <span>Auto-scanning</span>
+                <span className="font-normal leading-snug text-muted-foreground">
+                  Automatically scan content when using the browser extension.
+                </span>
+              </Label>
+              <Switch id="auto-scanning" defaultChecked />
+            </div>
+            <div className="flex items-center justify-between space-x-2">
+              <Label htmlFor="deep-scanning" className="flex flex-col space-y-1">
+                <span>Deep Scanning</span>
+                <span className="font-normal leading-snug text-muted-foreground">
+                  Enable more thorough analysis, which may take longer.
+                </span>
+              </Label>
+              <Switch id="deep-scanning" />
+            </div>
+            <div className="flex items-center justify-between space-x-2">
+              <Label htmlFor="scan-interval" className="flex flex-col space-y-1">
+                <span>Background Scan Interval</span>
+                <span className="font-normal leading-snug text-muted-foreground">
+                  How often to automatically scan for threats in the background.
+                </span>
+              </Label>
+              <Select defaultValue="15m">
+                <SelectTrigger id="scan-interval" className="w-[180px]">
+                  <SelectValue placeholder="Select interval" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="5m">Every 5 minutes</SelectItem>
+                  <SelectItem value="15m">Every 15 minutes</SelectItem>
+                  <SelectItem value="30m">Every 30 minutes</SelectItem>
+                  <SelectItem value="1h">Every hour</SelectItem>
+                  <SelectItem value="never">Never</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
           </div>
         </CardContent>
         <CardFooter>
@@ -253,3 +287,5 @@ export default function SettingsPage() {
     </div>
   );
 }
+
+    
