@@ -81,6 +81,35 @@ export default function SettingsPage() {
 
       <Card>
         <CardHeader>
+          <CardTitle>Change Password</CardTitle>
+          <CardDescription>
+            For your security, we recommend choosing a strong password that you
+            don't use elsewhere.
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="space-y-2">
+            <Label htmlFor="current-password">Current Password</Label>
+            <Input id="current-password" type="password" />
+          </div>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <Label htmlFor="new-password">New Password</Label>
+              <Input id="new-password" type="password" />
+            </div>
+            <div className="space-y-2">
+              <Label htmlFor="confirm-password">Confirm New Password</Label>
+              <Input id="confirm-password" type="password" />
+            </div>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button>Change Password</Button>
+        </CardFooter>
+      </Card>
+
+      <Card>
+        <CardHeader>
           <CardTitle>Preferences</CardTitle>
           <CardDescription>Customize the app to your liking.</CardDescription>
         </CardHeader>
