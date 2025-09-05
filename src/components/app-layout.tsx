@@ -21,6 +21,7 @@ import {
   Settings,
   ShieldCheck,
   ScanLine,
+  CreditCard,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -31,6 +32,7 @@ const menuItems = [
   { href: "/history", icon: History, label: "Scan History" },
   { href: "/report", icon: Flag, label: "Report a Scam" },
   { href: "/extension", icon: Puzzle, label: "Web Extension" },
+  { href: "/subscription", icon: CreditCard, label: "Subscription" },
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
 

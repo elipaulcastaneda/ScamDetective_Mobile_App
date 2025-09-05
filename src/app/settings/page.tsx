@@ -157,22 +157,6 @@ export default function SettingsPage() {
           <Button>Save Preferences</Button>
         </CardFooter>
       </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Subscription</CardTitle>
-          <CardDescription>Manage your billing and subscription plan.</CardDescription>
-        </CardHeader>
-        <CardContent>
-          <div className="flex justify-between items-center">
-            <div>
-              <p className="font-semibold">Current Plan: <span className="text-primary">Pro</span></p>
-              <p className="text-sm text-muted-foreground">Your plan renews on August 1, 2024.</p>
-            </div>
-            <Button variant="outline">Manage Subscription</Button>
-          </div>
-        </CardContent>
-      </Card>
     </div>
   );
 }
