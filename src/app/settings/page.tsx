@@ -70,7 +70,8 @@ export default function SettingsPage() {
               onValueChange={setTheme}
               className="grid max-w-md grid-cols-3 gap-8 pt-2"
             >
-              <FormItem>
+              <div
+              >
                 <Label className="[&:has([data-state=checked])>div]:border-primary">
                   <RadioGroupItem value="light" className="sr-only" />
                   <div className="items-center rounded-md border-2 border-muted p-1 hover:border-accent">
@@ -93,8 +94,9 @@ export default function SettingsPage() {
                     Light
                   </span>
                 </Label>
-              </FormItem>
-              <FormItem>
+              </div>
+              <div
+              >
                 <Label className="[&:has([data-state=checked])>div]:border-primary">
                   <RadioGroupItem value="dark" className="sr-only" />
                   <div className="items-center rounded-md border-2 border-muted bg-popover p-1 hover:border-accent">
@@ -117,8 +119,9 @@ export default function SettingsPage() {
                     Dark
                   </span>
                 </Label>
-              </FormItem>
-              <FormItem>
+              </div>
+              <div
+              >
                 <Label className="[&:has([data-state=checked])>div]:border-primary">
                   <RadioGroupItem value="system" className="sr-only" />
                   <div className="items-center rounded-md border-2 border-muted p-1 hover:border-accent">
@@ -130,7 +133,7 @@ export default function SettingsPage() {
                     System
                   </span>
                 </Label>
-              </FormItem>
+              </div>
             </RadioGroup>
             )}
           </div>
@@ -159,8 +162,4 @@ export default function SettingsPage() {
       </Card>
     </div>
   );
-}
-
-function FormItem(props: React.ComponentProps<"div">) {
-  return <div {...props} />;
 }
