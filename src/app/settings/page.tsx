@@ -55,6 +55,29 @@ export default function SettingsPage() {
           <Button>Save Changes</Button>
         </CardFooter>
       </Card>
+      
+      <Card>
+        <CardHeader>
+          <CardTitle>Two-Factor Authentication</CardTitle>
+          <CardDescription>
+            Add an extra layer of security to your account.
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="two-factor-auth" className="flex flex-col space-y-1">
+              <span>Enable Two-Factor Authentication</span>
+              <span className="font-normal leading-snug text-muted-foreground">
+                You'll be asked for a code from your authenticator app when you sign in.
+              </span>
+            </Label>
+            <Switch id="two-factor-auth" />
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button variant="outline" disabled>Set Up Authenticator App</Button>
+        </CardFooter>
+      </Card>
 
       <Card>
         <CardHeader>
