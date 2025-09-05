@@ -20,12 +20,14 @@ import {
   Puzzle,
   Settings,
   ShieldCheck,
+  ScanLine,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
 
 const menuItems = [
   { href: "/dashboard", icon: LayoutGrid, label: "Dashboard" },
+  { href: "/quick-scan", icon: ScanLine, label: "Quick Scan" },
   { href: "/history", icon: History, label: "Scan History" },
   { href: "/report", icon: Flag, label: "Report a Scam" },
   { href: "/extension", icon: Puzzle, label: "Web Extension" },
