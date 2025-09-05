@@ -36,10 +36,12 @@ const threatsData = [
 ];
 
 const riskDistributionData = [
-    { name: 'Low', value: 400, fill: 'hsl(var(--chart-2))' },
-    { name: 'Medium', value: 300, fill: 'hsl(var(--chart-4))' },
-    { name: 'High', value: 200, fill: 'hsl(var(--chart-1))' },
+    { name: 'Low', value: 811, fill: 'hsl(var(--chart-2))' },
+    { name: 'Medium', value: 352, fill: 'hsl(var(--chart-4))' },
+    { name: 'High', value: 189, fill: 'hsl(var(--chart-1))' },
 ];
+
+const totalScans = riskDistributionData.reduce((acc, curr) => acc + curr.value, 0);
 
 const protectionRate = 98.6;
 
@@ -67,7 +69,7 @@ export function DashboardOverview() {
           <ScanLine className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">1,352</div>
+          <div className="text-2xl font-bold">{totalScans.toLocaleString()}</div>
           <p className="text-xs text-muted-foreground">
             +18.3% from last month
           </p>
