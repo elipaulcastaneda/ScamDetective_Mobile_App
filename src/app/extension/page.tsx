@@ -1,6 +1,6 @@
 import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Download } from 'lucide-react';
 
 export default function ExtensionPage() {
@@ -31,13 +31,24 @@ export default function ExtensionPage() {
               <li><span className="font-semibold text-foreground">One-Click Analysis:</span> Easily analyze text on any page by right-clicking and selecting 'Scan with ScamDetective'.</li>
             </ul>
           </div>
+           <div>
+            <h3 className="text-xl font-semibold mb-4">Download Now</h3>
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <Button size="lg" disabled>
+                <Download className="mr-2 h-5 w-5" />
+                For Chrome (soon)
+              </Button>
+              <Button size="lg" disabled>
+                <Download className="mr-2 h-5 w-5" />
+                For Firefox (soon)
+              </Button>
+              <Button size="lg" disabled>
+                <Download className="mr-2 h-5 w-5" />
+                Other Browsers (soon)
+              </Button>
+            </div>
+          </div>
         </CardContent>
-        <CardFooter>
-          <Button size="lg" className="w-full">
-            <Download className="mr-2 h-5 w-5" />
-            Download for Your Browser (Coming Soon)
-          </Button>
-        </CardFooter>
       </Card>
     </div>
   );
