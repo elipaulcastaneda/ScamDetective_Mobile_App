@@ -16,25 +16,36 @@ import {
   XAxis,
   YAxis,
   Tooltip,
+  PieChart,
+  Pie,
+  Cell,
+  Legend,
 } from "recharts";
 import {
   ChartContainer,
   ChartTooltipContent,
+  ChartLegendContent,
 } from "@/components/ui/chart";
 import { ShieldAlert, ShieldCheck, ShieldX, ScanLine } from "lucide-react";
 import { Progress } from "../ui/progress";
 
 const threatsData = [
-  { type: "Phishing", count: 42, fill: "hsl(var(--destructive))" },
-  { type: "Malware", count: 28, fill: "hsl(var(--primary))" },
-  { type: "Spam", count: 78, fill: "hsl(var(--secondary))" },
+  { type: "Phishing", count: 42, fill: "hsl(var(--chart-1))" },
+  { type: "Malware", count: 28, fill: "hsl(var(--chart-2))" },
+  { type: "Spam", count: 78, fill: "hsl(var(--chart-3))" },
+];
+
+const riskDistributionData = [
+    { name: 'Low', value: 400, fill: 'hsl(var(--chart-2))' },
+    { name: 'Medium', value: 300, fill: 'hsl(var(--chart-4))' },
+    { name: 'High', value: 200, fill: 'hsl(var(--chart-1))' },
 ];
 
 const protectionRate = 98.6;
 
 export function DashboardOverview() {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Protection Rate</CardTitle>
@@ -74,7 +85,40 @@ export function DashboardOverview() {
           </p>
         </CardContent>
       </Card>
-      <Card className="md:col-span-2 lg:col-span-3">
+       <Card>
+        <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+          <CardTitle className="text-sm font-medium">Risk Levels</CardTitle>
+          <ShieldAlert className="h-4 w-4 text-muted-foreground" />
+        </CardHeader>
+        <CardContent className="flex items-center justify-center p-0">
+          <ChartContainer config={{}} className="h-48 w-full">
+            <ResponsiveContainer width="100%" height="100%">
+                <PieChart>
+                    <Tooltip
+                        cursor={{ fill: 'hsl(var(--accent) / 0.5)' }}
+                        content={<ChartTooltipContent />}
+                    />
+                    <Pie
+                        data={riskDistributionData}
+                        dataKey="value"
+                        nameKey="name"
+                        cx="50%"
+                        cy="50%"
+                        innerRadius={40}
+                        outerRadius={60}
+                        paddingAngle={5}
+                    >
+                        {riskDistributionData.map((entry, index) => (
+                        <Cell key={`cell-${index}`} fill={entry.fill} />
+                        ))}
+                    </Pie>
+                     <ChartLegendContent />
+                </PieChart>
+            </ResponsiveContainer>
+          </ChartContainer>
+        </CardContent>
+      </Card>
+      <Card className="md:col-span-2 lg:col-span-4">
         <CardHeader>
           <CardTitle>Threat Breakdown</CardTitle>
           <CardDescription>Types of threats detected this month.</CardDescription>
