@@ -21,7 +21,7 @@ import {
   ChartContainer,
   ChartTooltipContent,
 } from "@/components/ui/chart";
-import { ShieldAlert, ShieldCheck, ShieldQuestion } from "lucide-react";
+import { ShieldAlert, ShieldCheck, ShieldX, ScanLine } from "lucide-react";
 import { Progress } from "../ui/progress";
 
 const threatsData = [
@@ -30,42 +30,42 @@ const threatsData = [
   { type: "Spam", count: 78, fill: "hsl(var(--secondary))" },
 ];
 
-const riskScore = 75;
+const protectionRate = 98.6;
 
 export function DashboardOverview() {
   return (
     <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Overall Risk Score</CardTitle>
-          <ShieldQuestion className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium">Protection Rate</CardTitle>
+          <ShieldCheck className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">{riskScore} / 100</div>
+          <div className="text-2xl font-bold">{protectionRate}%</div>
           <p className="text-xs text-muted-foreground">
-            Based on your recent activity
+            Of all threats analyzed were blocked
           </p>
         </CardContent>
         <CardFooter>
-           <Progress value={riskScore} aria-label={`${riskScore}% risk score`} />
+           <Progress value={protectionRate} aria-label={`${protectionRate}% protection rate`} />
         </CardFooter>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Safe Scans</CardTitle>
-          <ShieldCheck className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium">Total Scans</CardTitle>
+          <ScanLine className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
-          <div className="text-2xl font-bold">1,204</div>
+          <div className="text-2xl font-bold">1,352</div>
           <p className="text-xs text-muted-foreground">
-            +15.2% from last month
+            +18.3% from last month
           </p>
         </CardContent>
       </Card>
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-          <CardTitle className="text-sm font-medium">Threats Detected</CardTitle>
-          <ShieldAlert className="h-4 w-4 text-muted-foreground" />
+          <CardTitle className="text-sm font-medium">Threats Blocked</CardTitle>
+          <ShieldX className="h-4 w-4 text-muted-foreground" />
         </CardHeader>
         <CardContent>
           <div className="text-2xl font-bold">148</div>
