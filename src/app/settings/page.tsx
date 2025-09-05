@@ -169,18 +169,56 @@ export default function SettingsPage() {
             </Label>
             <Switch id="real-time-scanning" defaultChecked />
           </div>
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="email-notifications" className="flex flex-col space-y-1">
-              <span>Email Notifications</span>
-              <span className="font-normal leading-snug text-muted-foreground">
-                Receive weekly summaries and security alerts via email.
-              </span>
-            </Label>
-            <Switch id="email-notifications" />
-          </div>
         </CardContent>
         <CardFooter>
           <Button>Save Preferences</Button>
+        </CardFooter>
+      </Card>
+      <Card>
+        <CardHeader>
+          <CardTitle>Notifications</CardTitle>
+          <CardDescription>Choose what you want to be notified about.</CardDescription>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="email-alerts" className="flex flex-col space-y-1">
+              <span>Email Alerts</span>
+              <span className="font-normal leading-snug text-muted-foreground">
+                Receive an email for critical security events.
+              </span>
+            </Label>
+            <Switch id="email-alerts" />
+          </div>
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="browser-notifications" className="flex flex-col space-y-1">
+              <span>Browser Notifications</span>
+              <span className="font-normal leading-snug text-muted-foreground">
+                Get instant alerts for suspicious sites via your browser.
+              </span>
+            </Label>
+            <Switch id="browser-notifications" defaultChecked />
+          </div>
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="weekly-reports" className="flex flex-col space-y-1">
+              <span>Weekly Reports</span>
+              <span className="font-normal leading-snug text-muted-foreground">
+                Receive a weekly summary of your protection status.
+              </span>
+            </Label>
+            <Switch id="weekly-reports" />
+          </div>
+          <div className="flex items-center justify-between space-x-2">
+            <Label htmlFor="security-updates" className="flex flex-col space-y-1">
+              <span>Security Updates</span>
+              <span className="font-normal leading-snug text-muted-foreground">
+                Be notified when new security features or updates are available.
+              </span>
+            </Label>
+            <Switch id="security-updates" defaultChecked />
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button>Save Notification Settings</Button>
         </CardFooter>
       </Card>
     </div>
