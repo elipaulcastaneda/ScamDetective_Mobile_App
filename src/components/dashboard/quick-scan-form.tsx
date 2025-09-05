@@ -7,13 +7,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { handleTextScan, type State } from "@/app/actions";
 import { Button } from "@/components/ui/button";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
   Form,
   FormControl,
@@ -53,98 +47,104 @@ function SubmitButton() {
 }
 
 export function QuickScanForm() {
-  const initialState: State = { message: null, errors: {} };
+  const initialState: State = { message: null, errors: {}, data: null };
   const [state, dispatch] = useFormState(handleTextScan, initialState);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
     },
+    // Reset form when state.data is cleared
+    resetOptions: {
+      keepDirtyValues: false,
+    }
   });
 
   useEffect(() => {
-    if (state?.data) {
-      setIsDialogOpen(true);
+    if (!state.data) {
+      form.reset();
     }
-  }, [state]);
+  }, [state.data, form]);
 
-  const onDialogClose = () => {
-    setIsDialogOpen(false);
-    form.reset();
-  }
 
   return (
-    <>
-      <Tabs defaultValue="text" className="w-full">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="text">Text</TabsTrigger>
-          <TabsTrigger value="phone">Phone</TabsTrigger>
-          <TabsTrigger value="email">Email</TabsTrigger>
-          <TabsTrigger value="url">Website URL</TabsTrigger>
-        </TabsList>
-        <TabsContent value="text" className="mt-4">
-          <Form {...form}>
-            <form action={dispatch} className="space-y-4">
-              <FormField
-                control={form.control}
-                name="content"
-                render={({ field }) => (
-                  <FormItem>
-                    <FormLabel>Content to Analyze</FormLabel>
-                    <FormControl>
-                      <Textarea
-                        placeholder="Paste any suspicious text, like an email or a text message..."
-                        rows={6}
-                        {...field}
-                      />
-                    </FormControl>
-                    <FormMessage />
-                    {state?.errors?.content && (
-                       <p className="text-sm font-medium text-destructive">{state.errors.content}</p>
+    <div className="space-y-6">
+      <Card>
+        <CardHeader>
+          <CardTitle>Quick Scan</CardTitle>
+          <CardDescription>Analyze text, phone numbers, emails, or websites for potential scams.</CardDescription>
+        </CardHeader>
+        <CardContent>
+           <Tabs defaultValue="text" className="w-full">
+            <TabsList className="grid w-full grid-cols-4">
+              <TabsTrigger value="text">Text</TabsTrigger>
+              <TabsTrigger value="phone">Phone</TabsTrigger>
+              <TabsTrigger value="email">Email</TabsTrigger>
+              <TabsTrigger value="url">Website URL</TabsTrigger>
+            </TabsList>
+            <TabsContent value="text" className="mt-4">
+              <Form {...form}>
+                <form action={dispatch} className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="content"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel>Content to Analyze</FormLabel>
+                        <FormControl>
+                          <Textarea
+                            placeholder="Paste any suspicious text, like an email or a text message..."
+                            rows={6}
+                            {...field}
+                          />
+                        </FormControl>
+                        <FormMessage />
+                        {state?.errors?.content && (
+                          <p className="text-sm font-medium text-destructive">{state.errors.content}</p>
+                        )}
+                      </FormItem>
                     )}
-                  </FormItem>
-                )}
-              />
-              <SubmitButton />
-            </form>
-          </Form>
-        </TabsContent>
-        <TabsContent value="phone" className="mt-4 space-y-4">
-          <div>
-            <Label htmlFor="phone">Phone Number</Label>
-            <Input id="phone" type="tel" placeholder="+1-800-555-0199" />
-          </div>
-          <Button className="w-full" disabled><ScanLine className="mr-2 h-4 w-4" />Scan Number (soon)</Button>
-        </TabsContent>
-        <TabsContent value="email" className="mt-4 space-y-4">
-          <div>
-            <Label htmlFor="email">Email Address</Label>
-            <Input id="email" type="email" placeholder="winner@lotterymillions.net" />
-          </div>
-          <Button className="w-full" disabled><ScanLine className="mr-2 h-4 w-4" />Scan Email (soon)</Button>
-        </TabsContent>
-        <TabsContent value="url" className="mt-4 space-y-4">
-          <div>
-            <Label htmlFor="url">Website URL</Label>
-            <Input id="url" type="url" placeholder="http://secure-login-bank.com" />
-          </div>
-          <Button className="w-full" disabled><ScanLine className="mr-2 h-4 w-4" />Scan URL (soon)</Button>
-        </TabsContent>
-      </Tabs>
-
-      <Dialog open={isDialogOpen} onOpenChange={onDialogClose}>
-        <DialogContent className="sm:max-w-md">
-          <DialogHeader>
-            <DialogTitle>Analysis Result</DialogTitle>
-            <DialogDescription>
-              AI-powered analysis of the provided content.
-            </DialogDescription>
-          </DialogHeader>
-          {state?.data && (
-            <div className="space-y-4">
+                  />
+                  <SubmitButton />
+                </form>
+              </Form>
+            </TabsContent>
+            <TabsContent value="phone" className="mt-4 space-y-4">
               <div>
+                <Label htmlFor="phone">Phone Number</Label>
+                <Input id="phone" type="tel" placeholder="+1-800-555-0199" />
+              </div>
+              <Button className="w-full" disabled><ScanLine className="mr-2 h-4 w-4" />Scan Number (soon)</Button>
+            </TabsContent>
+            <TabsContent value="email" className="mt-4 space-y-4">
+              <div>
+                <Label htmlFor="email">Email Address</Label>
+                <Input id="email" type="email" placeholder="winner@lotterymillions.net" />
+              </div>
+              <Button className="w-full" disabled><ScanLine className="mr-2 h-4 w-4" />Scan Email (soon)</Button>
+            </TabsContent>
+            <TabsContent value="url" className="mt-4 space-y-4">
+              <div>
+                <Label htmlFor="url">Website URL</Label>
+                <Input id="url" type="url" placeholder="http://secure-login-bank.com" />
+              </div>
+              <Button className="w-full" disabled><ScanLine className="mr-2 h-4 w-4" />Scan URL (soon)</Button>
+            </TabsContent>
+          </Tabs>
+        </CardContent>
+      </Card>
+
+      {state?.data && (
+        <Card>
+          <CardHeader>
+            <CardTitle>Analysis Result</CardTitle>
+            <CardDescription>
+              AI-powered analysis of the provided content.
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+             <div>
                 <Label>Scam Likelihood</Label>
                 <div className="flex items-center gap-4 mt-1">
                   <Progress value={state.data.scamLikelihoodScore * 100} className="w-[60%]" />
@@ -159,11 +159,9 @@ export function QuickScanForm() {
                   {state.data.rationale}
                 </p>
               </div>
-            </div>
-          )}
-           <Button onClick={onDialogClose} variant="outline">Close</Button>
-        </DialogContent>
-      </Dialog>
-    </>
+          </CardContent>
+        </Card>
+      )}
+    </div>
   );
 }
