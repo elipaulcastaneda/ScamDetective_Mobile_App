@@ -1,7 +1,8 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { useFormState, useFormStatus } from "react-dom";
+import { useEffect } from "react";
+import { useActionState } from "react";
+import { useFormStatus } from "react-dom";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -48,7 +49,7 @@ function SubmitButton() {
 
 export function QuickScanForm() {
   const initialState: State = { message: null, errors: {}, data: null };
-  const [state, dispatch] = useFormState(handleTextScan, initialState);
+  const [state, dispatch] = useActionState(handleTextScan, initialState);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
