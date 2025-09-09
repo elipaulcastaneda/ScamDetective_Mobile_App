@@ -19,12 +19,12 @@ import {
   Flag,
   Puzzle,
   Settings,
-  ShieldCheck,
   ScanLine,
   CreditCard,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
+import { Logo } from "./logo";
 
 const menuItems = [
   { href: "/dashboard", icon: LayoutGrid, label: "Dashboard" },
@@ -47,7 +47,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
             <Button variant="ghost" size="icon" className="md:hidden" asChild>
               <SidebarTrigger />
             </Button>
-            <ShieldCheck className="h-8 w-8 text-primary" />
+            <Logo className="h-8 w-8 text-primary" />
             <div className="group-data-[collapsible=icon]:hidden">
               <h2 className="text-lg font-headline font-bold">ScamDetective</h2>
             </div>
