@@ -30,6 +30,7 @@ const scanHistory = [
     risk: 0.95,
     date: "2024-07-21",
     result: "High Risk",
+    threatType: "Phishing",
   },
   {
     id: "2",
@@ -38,6 +39,7 @@ const scanHistory = [
     risk: 0.88,
     date: "2024-07-20",
     result: "High Risk",
+    threatType: "Phishing",
   },
   {
     id: "3",
@@ -46,6 +48,7 @@ const scanHistory = [
     risk: 0.76,
     date: "2024-07-20",
     result: "Medium Risk",
+    threatType: "Spam",
   },
   {
     id: "4",
@@ -54,6 +57,7 @@ const scanHistory = [
     risk: 0.21,
     date: "2024-07-19",
     result: "Low Risk",
+    threatType: "None",
   },
   {
     id: "5",
@@ -62,14 +66,16 @@ const scanHistory = [
     risk: 0.01,
     date: "2024-07-18",
     result: "Safe",
+    threatType: "None",
   },
-    {
+  {
     id: "6",
     type: "Text",
     content: "Hey, are you free this weekend? Let's catch up.",
     risk: 0.02,
     date: "2024-07-17",
     result: "Safe",
+    threatType: "None",
   },
 ];
 
@@ -106,6 +112,7 @@ export default function HistoryPage() {
             <TableRow>
               <TableHead className="w-[50px]">Type</TableHead>
               <TableHead>Content</TableHead>
+              <TableHead>Threat Type</TableHead>
               <TableHead className="text-right">Risk</TableHead>
               <TableHead className="text-center">Result</TableHead>
               <TableHead>Date</TableHead>
@@ -128,6 +135,7 @@ export default function HistoryPage() {
                     </Tooltip>
                   </TableCell>
                   <TableCell className="font-medium truncate max-w-xs">{scan.content}</TableCell>
+                  <TableCell>{scan.threatType}</TableCell>
                   <TableCell className="text-right">{(scan.risk * 100).toFixed(0)}%</TableCell>
                   <TableCell className="text-center">
                     <Badge variant={getRiskBadgeVariant(scan.result)}>
