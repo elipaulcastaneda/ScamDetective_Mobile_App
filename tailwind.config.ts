@@ -10,8 +10,8 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        body: ['"PT Sans"', 'sans-serif'],
-        headline: ['"Merriweather"', 'serif'],
+        body: ['"Inter"', 'sans-serif'],
+        headline: ['"Lexend"', 'sans-serif'],
         code: ['monospace'],
       },
       colors: {
