@@ -145,21 +145,33 @@ export function QuickScanForm() {
             </CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
-             <div>
-                <Label>Scam Likelihood</Label>
-                <div className="flex items-center gap-4 mt-1">
-                  <Progress value={state.data.scamLikelihoodScore * 100} className="w-[60%]" />
-                  <p className="font-bold text-lg">
-                    {(state.data.scamLikelihoodScore * 100).toFixed(0)}%
-                  </p>
-                </div>
-              </div>
-              <div>
-                <Label>Rationale</Label>
-                <p className="text-sm text-muted-foreground mt-1 bg-muted p-3 rounded-md border">
-                  {state.data.rationale}
+            <div>
+              <Label>Scam Classification</Label>
+              <p className="text-sm mt-1">
+                {state.data.predicted_class === 1 ? (
+                  <span className="font-semibold text-destructive">⚠️ Likely Scam</span>
+                ) : (
+                  <span className="font-semibold text-green-600">✓ Likely Safe</span>
+                )}
+              </p>
+            </div>
+            <div>
+              <Label>Confidence</Label>
+              <div className="flex items-center gap-4 mt-1">
+                <Progress value={state.data.probability * 100} className="w-[60%]" />
+                <p className="font-bold text-lg">
+                  {(state.data.probability * 100).toFixed(1)}%
                 </p>
               </div>
+            </div>
+            {state.message && (
+              <div>
+                <Label>Status</Label>
+                <p className="text-sm text-muted-foreground mt-1 bg-muted p-3 rounded-md border">
+                  {state.message}
+                </p>
+              </div>
+            )}
           </CardContent>
         </Card>
       )}
