@@ -1,12 +1,10 @@
 "use client";
 
-import { useEffect } from "react";
-import { useActionState } from "react";
-import { useFormStatus } from "react-dom";
+import { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
-import { handleTextScan, type State } from "@/app/actions";
+import { handleTextScanClient, type State } from "@/lib/clientActions";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
@@ -28,11 +26,10 @@ const formSchema = z.object({
   content: z.string().min(10, "Content must be at least 10 characters long."),
 });
 
-function SubmitButton() {
-  const { pending } = useFormStatus();
+function SubmitButton({loading}:{loading:boolean}) {
   return (
-    <Button type="submit" disabled={pending} className="w-full">
-      {pending ? (
+    <Button type="submit" disabled={loading} className="w-full">
+      {loading ? (
         <>
           <Loader2 className="mr-2 h-4 w-4 animate-spin" />
           Analyzing...
@@ -49,17 +46,14 @@ function SubmitButton() {
 
 export function QuickScanForm() {
   const initialState: State = { message: null, errors: {}, data: null };
-  const [state, dispatch] = useActionState(handleTextScan, initialState);
+  const [state, setState] = useState<State>(initialState);
+  const [loading, setLoading] = useState(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
       content: "",
     },
-    // Reset form when state.data is cleared
-    resetOptions: {
-      keepDirtyValues: false,
-    }
   });
 
   useEffect(() => {
@@ -68,6 +62,16 @@ export function QuickScanForm() {
     }
   }, [state.data, form]);
 
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    setLoading(true);
+    setState({ message: null, errors: {}, data: null });
+    try {
+      const res = await handleTextScanClient(values.content);
+      setState(res);
+    } finally {
+      setLoading(false);
+    }
+  }
 
   return (
     <div className="space-y-6">
@@ -86,7 +90,7 @@ export function QuickScanForm() {
             </TabsList>
             <TabsContent value="text" className="mt-4">
               <Form {...form}>
-                <form action={dispatch} className="space-y-4">
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                   <FormField
                     control={form.control}
                     name="content"
@@ -107,7 +111,7 @@ export function QuickScanForm() {
                       </FormItem>
                     )}
                   />
-                  <SubmitButton />
+                  <SubmitButton loading={loading} />
                 </form>
               </Form>
             </TabsContent>

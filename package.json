@@ -10,7 +10,7 @@
     "start": "next start",
     "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "build:mobile": "next build && next export && npx cap copy",
+    "build:mobile": "next build && npx cap copy",
     "sync:android": "npx cap sync android",
     "sync:ios": "npx cap sync ios",
     "expo:start": "expo start",
