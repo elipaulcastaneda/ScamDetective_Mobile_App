@@ -25,6 +25,7 @@ import {
 import Link from "next/link";
 import { Button } from "./ui/button";
 import { Logo } from "./logo";
+import { cn } from "@/lib/utils";
 
 const menuItems = [
   { href: "/dashboard", icon: LayoutGrid, label: "Dashboard" },
@@ -36,17 +37,18 @@ const menuItems = [
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
 
+// Show all items in bottom nav on mobile
+const mobileMenuItems = menuItems;
+
 export function AppLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
 
   return (
     <SidebarProvider>
-      <Sidebar>
+      {/* Desktop Sidebar - hidden on mobile */}
+      <Sidebar className="hidden md:flex">
         <SidebarHeader>
           <div className="flex items-center gap-2 p-2">
-            <Button variant="ghost" size="icon" className="md:hidden" asChild>
-              <SidebarTrigger />
-            </Button>
             <Logo className="h-8 w-8 text-primary" />
             <div className="group-data-[collapsible=icon]:hidden">
               <h2 className="text-lg font-headline font-bold">ScamDetective</h2>
@@ -75,14 +77,47 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
           {/* Footer content if any */}
         </SidebarFooter>
       </Sidebar>
-      <SidebarInset>
-        <header className="flex items-center justify-end md:justify-between p-4 border-b">
-          <div className="hidden md:block">
-            <SidebarTrigger />
+      
+      <SidebarInset className="flex flex-col">
+        {/* Mobile Header */}
+        <header className="flex items-center justify-between p-4 border-b md:hidden">
+          <div className="flex items-center gap-2">
+            <Logo className="h-8 w-8 text-primary" />
+            <h2 className="text-lg font-headline font-bold">ScamDetective</h2>
           </div>
-          {/* Header content like user menu could go here */}
         </header>
-        <main className="p-4 md:p-6 lg:p-8">{children}</main>
+        
+        {/* Desktop Header */}
+        <header className="hidden md:flex items-center justify-between p-4 border-b">
+          <SidebarTrigger />
+        </header>
+        
+        {/* Main Content - with bottom padding on mobile for nav */}
+        <main className="flex-1 p-4 md:p-6 lg:p-8 pb-20 md:pb-4">{children}</main>
+        
+        {/* Mobile Bottom Navigation */}
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t md:hidden overflow-x-auto">
+          <div className="flex items-center h-16 min-w-max px-2">
+            {mobileMenuItems.map((item) => {
+              const isActive = pathname === item.href;
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={cn(
+                    "flex flex-col items-center justify-center px-4 h-full gap-1 text-xs transition-colors whitespace-nowrap",
+                    isActive 
+                      ? "text-primary font-medium" 
+                      : "text-muted-foreground hover:text-foreground"
+                  )}
+                >
+                  <item.icon className="h-5 w-5" />
+                  <span className="text-[10px]">{item.label.split(" ")[0]}</span>
+                </Link>
+              );
+            })}
+          </div>
+        </nav>
       </SidebarInset>
     </SidebarProvider>
   );
