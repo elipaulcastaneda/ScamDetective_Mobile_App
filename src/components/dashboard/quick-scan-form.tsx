@@ -20,7 +20,8 @@ import { Label } from "@/components/ui/label";
 import { Progress } from "@/components/ui/progress";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Textarea } from "@/components/ui/textarea";
-import { Loader2, ScanLine } from "lucide-react";
+import { Loader2, ScanLine, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const formSchema = z.object({
   content: z.string().min(10, "Content must be at least 10 characters long."),
@@ -56,6 +57,11 @@ export function QuickScanForm() {
     },
   });
 
+  // Debug: Log state changes
+  useEffect(() => {
+    console.log("State updated:", state);
+  }, [state]);
+
   useEffect(() => {
     if (!state.data) {
       form.reset();
@@ -67,7 +73,15 @@ export function QuickScanForm() {
     setState({ message: null, errors: {}, data: null });
     try {
       const res = await handleTextScanClient(values.content);
+      console.log("Scan result:", res); // Debug log
       setState(res);
+    } catch (error) {
+      console.error("Scan error:", error); // Debug log
+      setState({
+        message: "Failed to analyze content",
+        errors: { server: [error instanceof Error ? error.message : "Unknown error"] },
+        data: null,
+      });
     } finally {
       setLoading(false);
     }
@@ -139,6 +153,18 @@ export function QuickScanForm() {
           </Tabs>
         </CardContent>
       </Card>
+
+      {/* Error Display */}
+      {state?.errors?.server && (
+        <Alert variant="destructive">
+          <AlertCircle className="h-4 w-4" />
+          <AlertTitle>Error</AlertTitle>
+          <AlertDescription>
+            {state.errors.server.join(", ")}
+            {state.message && <p className="mt-2">{state.message}</p>}
+          </AlertDescription>
+        </Alert>
+      )}
 
       {state?.data && (
         <>

@@ -21,6 +21,30 @@ export async function handleTextScanClient(content: string): Promise<State> {
     };
   }
 
+  // DEMO MODE: If no edge function URL is configured, use mock data
+  if (!API_CONFIG.edgeFunctionUrl) {
+    console.log("Demo mode: Using mock data");
+    await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate API delay
+    
+    // Determine if content looks scammy based on keywords
+    const scamKeywords = ['winner', 'prize', 'urgent', 'verify', 'account', 'suspended', 'click here', 'act now', 'congratulations', 'free money', 'claim', 'password', 'social security'];
+    const lowerContent = content.toLowerCase();
+    const scamIndicators = scamKeywords.filter(keyword => lowerContent.includes(keyword)).length;
+    
+    const isScam = scamIndicators >= 2 || lowerContent.includes('congratulations') || lowerContent.includes('winner');
+    const probability = isScam 
+      ? Math.min(0.65 + (scamIndicators * 0.08), 0.98)
+      : Math.max(0.35 - (scamIndicators * 0.08), 0.05);
+    
+    return {
+      message: "Analysis successful (Demo Mode - Mock Data).",
+      data: {
+        predicted_class: isScam ? 1 : 0,
+        probability: probability,
+      },
+    };
+  }
+
   try {
     const payload = new FormData();
     payload.append("text", content);
