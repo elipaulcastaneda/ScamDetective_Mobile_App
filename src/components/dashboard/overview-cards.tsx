@@ -47,7 +47,7 @@ const protectionRate = 98.6;
 
 export function DashboardOverview() {
   return (
-    <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+    <div className="grid gap-4 grid-cols-1 sm:grid-cols-2 lg:grid-cols-4">
       <Card>
         <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
           <CardTitle className="text-sm font-medium">Protection Rate</CardTitle>
@@ -120,18 +120,18 @@ export function DashboardOverview() {
           </ChartContainer>
         </CardContent>
       </Card>
-      <Card className="md:col-span-2 lg:col-span-4">
+      <Card className="sm:col-span-2 lg:col-span-4">
         <CardHeader>
           <CardTitle>Threat Breakdown</CardTitle>
           <CardDescription>Types of threats detected this month.</CardDescription>
         </CardHeader>
-        <CardContent>
-          <ChartContainer config={{}} className="h-64 w-full">
+        <CardContent className="overflow-hidden">
+          <ChartContainer config={{}} className="h-64 w-full min-w-0">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={threatsData} margin={{ top: 20, right: 20, left: -10, bottom: 5 }}>
+              <BarChart data={threatsData} margin={{ top: 20, right: 10, left: 0, bottom: 5 }}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} />
-                <XAxis dataKey="type" />
-                <YAxis />
+                <XAxis dataKey="type" tick={{ fontSize: 12 }} />
+                <YAxis tick={{ fontSize: 12 }} />
                 <Tooltip
                   cursor={{ fill: 'hsl(var(--accent) / 0.5)' }}
                   content={<ChartTooltipContent />}
