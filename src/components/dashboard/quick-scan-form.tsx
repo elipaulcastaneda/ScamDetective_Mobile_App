@@ -141,43 +141,144 @@ export function QuickScanForm() {
       </Card>
 
       {state?.data && (
-        <Card>
-          <CardHeader>
-            <CardTitle>Analysis Result</CardTitle>
-            <CardDescription>
-              AI-powered analysis of the provided content.
-            </CardDescription>
-          </CardHeader>
-          <CardContent className="space-y-4">
-            <div>
-              <Label>Scam Classification</Label>
-              <p className="text-sm mt-1">
-                {state.data.predicted_class === 1 ? (
-                  <span className="font-semibold text-destructive">⚠️ Likely Scam</span>
-                ) : (
-                  <span className="font-semibold text-green-600">✓ Likely Safe</span>
-                )}
-              </p>
-            </div>
-            <div>
-              <Label>Confidence</Label>
-              <div className="flex items-center gap-4 mt-1">
-                <Progress value={state.data.probability * 100} className="w-[60%]" />
-                <p className="font-bold text-lg">
-                  {(state.data.probability * 100).toFixed(1)}%
-                </p>
-              </div>
-            </div>
-            {state.message && (
+        <>
+          <Card>
+            <CardHeader>
+              <CardTitle>Analysis Result</CardTitle>
+              <CardDescription>
+                AI-powered analysis of the provided content.
+              </CardDescription>
+            </CardHeader>
+            <CardContent className="space-y-4">
               <div>
-                <Label>Status</Label>
-                <p className="text-sm text-muted-foreground mt-1 bg-muted p-3 rounded-md border">
-                  {state.message}
+                <Label>Scam Classification</Label>
+                <p className="text-sm mt-1">
+                  {state.data.predicted_class === 1 ? (
+                    <span className="font-semibold text-destructive">⚠️ Likely Scam</span>
+                  ) : (
+                    <span className="font-semibold text-green-600">✓ Likely Safe</span>
+                  )}
                 </p>
               </div>
-            )}
-          </CardContent>
-        </Card>
+              <div>
+                <Label>Confidence</Label>
+                <div className="flex items-center gap-4 mt-1">
+                  <Progress value={state.data.probability * 100} className="w-[60%]" />
+                  <p className="font-bold text-lg">
+                    {(state.data.probability * 100).toFixed(1)}%
+                  </p>
+                </div>
+              </div>
+              {state.message && (
+                <div>
+                  <Label>Status</Label>
+                  <p className="text-sm text-muted-foreground mt-1 bg-muted p-3 rounded-md border">
+                    {state.message}
+                  </p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          <Card className={state.data.predicted_class === 1 ? "border-destructive" : "border-green-600"}>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                {state.data.predicted_class === 1 ? (
+                  <>
+                    <span className="text-2xl">⚠️</span>
+                    Scam Alert
+                  </>
+                ) : (
+                  <>
+                    <span className="text-2xl">✓</span>
+                    Content Appears Safe
+                  </>
+                )}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div>
+                <Label>Scam Likelihood</Label>
+                <div className="mt-2">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-3xl font-bold">
+                      {(state.data.probability * 100).toFixed(1)}%
+                    </span>
+                    <span className={`text-sm font-semibold px-3 py-1 rounded-full ${
+                      state.data.probability > 0.7 
+                        ? "bg-destructive/10 text-destructive" 
+                        : state.data.probability > 0.4
+                        ? "bg-yellow-500/10 text-yellow-700"
+                        : "bg-green-500/10 text-green-700"
+                    }`}>
+                      {state.data.probability > 0.7 
+                        ? "High Risk" 
+                        : state.data.probability > 0.4
+                        ? "Medium Risk"
+                        : "Low Risk"
+                      }
+                    </span>
+                  </div>
+                  <Progress 
+                    value={state.data.probability * 100} 
+                    className={`h-3 ${
+                      state.data.probability > 0.7 
+                        ? "[&>div]:bg-destructive" 
+                        : state.data.probability > 0.4
+                        ? "[&>div]:bg-yellow-500"
+                        : "[&>div]:bg-green-600"
+                    }`}
+                  />
+                </div>
+              </div>
+
+              <div>
+                <Label>Recommended Actions</Label>
+                <div className="mt-2 space-y-2">
+                  {state.data.predicted_class === 1 ? (
+                    <>
+                      <div className="flex items-start gap-2 text-sm bg-destructive/5 p-3 rounded-md border border-destructive/20">
+                        <span className="font-bold text-destructive">1.</span>
+                        <p><strong>Do not respond</strong> to this message or click any links.</p>
+                      </div>
+                      <div className="flex items-start gap-2 text-sm bg-destructive/5 p-3 rounded-md border border-destructive/20">
+                        <span className="font-bold text-destructive">2.</span>
+                        <p><strong>Do not share</strong> personal information, financial details, or passwords.</p>
+                      </div>
+                      <div className="flex items-start gap-2 text-sm bg-destructive/5 p-3 rounded-md border border-destructive/20">
+                        <span className="font-bold text-destructive">3.</span>
+                        <p><strong>Block the sender</strong> and report this as spam or phishing.</p>
+                      </div>
+                      <div className="flex items-start gap-2 text-sm bg-destructive/5 p-3 rounded-md border border-destructive/20">
+                        <span className="font-bold text-destructive">4.</span>
+                        <p><strong>Delete the message</strong> immediately to avoid accidental interaction.</p>
+                      </div>
+                      <div className="flex items-start gap-2 text-sm bg-destructive/5 p-3 rounded-md border border-destructive/20">
+                        <span className="font-bold text-destructive">5.</span>
+                        <p>If you've already shared information, <strong>contact your bank</strong> and consider changing your passwords.</p>
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <div className="flex items-start gap-2 text-sm bg-green-50 dark:bg-green-950/20 p-3 rounded-md border border-green-200 dark:border-green-900">
+                        <span className="font-bold text-green-700">1.</span>
+                        <p><strong>Exercise caution:</strong> While this content appears safe, always verify sender identity.</p>
+                      </div>
+                      <div className="flex items-start gap-2 text-sm bg-green-50 dark:bg-green-950/20 p-3 rounded-md border border-green-200 dark:border-green-900">
+                        <span className="font-bold text-green-700">2.</span>
+                        <p><strong>Check URLs:</strong> Before clicking links, hover to verify they lead to legitimate websites.</p>
+                      </div>
+                      <div className="flex items-start gap-2 text-sm bg-green-50 dark:bg-green-950/20 p-3 rounded-md border border-green-200 dark:border-green-900">
+                        <span className="font-bold text-green-700">3.</span>
+                        <p><strong>Stay vigilant:</strong> If anything seems unusual, verify through official channels.</p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        </>
       )}
     </div>
   );
