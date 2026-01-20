@@ -21,6 +21,7 @@ import {
   Settings,
   ScanLine,
   CreditCard,
+  Users,
 } from "lucide-react";
 import Link from "next/link";
 import { Button } from "./ui/button";
@@ -31,6 +32,7 @@ const menuItems = [
   { href: "/dashboard", icon: LayoutGrid, label: "Dashboard" },
   { href: "/quick-scan", icon: ScanLine, label: "Quick Scan" },
   { href: "/history", icon: History, label: "Scan History" },
+  { href: "/team", icon: Users, label: "Team Admin" },
   { href: "/report", icon: Flag, label: "Report a Scam" },
   { href: "/extension", icon: Puzzle, label: "Web Extension" },
   { href: "/subscription", icon: CreditCard, label: "Subscription" },
