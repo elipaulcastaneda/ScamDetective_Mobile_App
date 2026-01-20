@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -24,76 +24,8 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Button } from "@/components/ui/button";
-import { FileText, Link as LinkIcon, Mail, Phone, ChevronDown } from "lucide-react";
-
-const scanHistory = [
-  {
-    id: "1",
-    type: "Text",
-    content: "URGENT: Your account is locked. Click here to verify...",
-    fullContent: "URGENT: Your account is locked. Click here to verify your identity immediately or your account will be permanently suspended. We detected unusual activity from your IP address 192.168.1.1. Visit http://secure-verify-account.com/login to restore access within 24 hours.",
-    origin: "SMS from +1-555-0123",
-    risk: 0.95,
-    date: "2024-07-21",
-    result: "High Risk",
-    threatType: "Phishing",
-  },
-  {
-    id: "2",
-    type: "URL",
-    content: "http://secure-login-bank.com",
-    fullContent: "http://secure-login-bank.com/verify?user=12345&token=abc123xyz",
-    origin: "Email from security@bank-alerts.net",
-    risk: 0.88,
-    date: "2024-07-20",
-    result: "High Risk",
-    threatType: "Phishing",
-  },
-  {
-    id: "3",
-    type: "Email",
-    content: "winner@lotterymillions.net",
-    fullContent: "Congratulations! You've won $10,000,000 in our international lottery. To claim your prize, please send your personal details and a processing fee of $500 to winner@lotterymillions.net. This offer expires in 48 hours!",
-    origin: "Email from notifications@lottery-prize.com",
-    risk: 0.76,
-    date: "2024-07-20",
-    result: "Medium Risk",
-    threatType: "Spam",
-  },
-  {
-    id: "4",
-    type: "Phone",
-    content: "+1-800-555-0199",
-    fullContent: "+1-800-555-0199 (Caller ID: IRS Official)",
-    origin: "Incoming call",
-    risk: 0.21,
-    date: "2024-07-19",
-    result: "Low Risk",
-    threatType: "None",
-  },
-  {
-    id: "5",
-    type: "URL",
-    content: "https://google.com",
-    fullContent: "https://google.com/search?q=scam+detection",
-    origin: "Browser navigation",
-    risk: 0.01,
-    date: "2024-07-18",
-    result: "Safe",
-    threatType: "None",
-  },
-  {
-    id: "6",
-    type: "Text",
-    content: "Hey, are you free this weekend? Let's catch up.",
-    fullContent: "Hey, are you free this weekend? Let's catch up at the coffee shop on Main Street. I heard they have great pastries!",
-    origin: "SMS from John (Contact)",
-    risk: 0.02,
-    date: "2024-07-17",
-    result: "Safe",
-    threatType: "None",
-  },
-];
+import { FileText, Link as LinkIcon, Mail, Phone, ChevronDown, ScanLine } from "lucide-react";
+import { getScanHistory, clearScanHistory, type ScanHistoryItem } from "@/lib/scanHistory";
 
 const getRiskBadgeVariant = (result: string) => {
   switch (result) {
@@ -115,6 +47,43 @@ const typeIcons = {
 
 export default function HistoryPage() {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
+  const [scanHistory, setScanHistory] = useState<ScanHistoryItem[]>([]);
+  const [filterRange, setFilterRange] = useState<"24h" | "7d" | "30d" | "365d" | "all">("all");
+  
+  // Load scan history from local storage
+  useEffect(() => {
+    setScanHistory(getScanHistory());
+    
+    // Listen for updates
+    const handleUpdate = () => {
+      setScanHistory(getScanHistory());
+    };
+    
+    window.addEventListener("scanHistoryUpdated", handleUpdate);
+    return () => window.removeEventListener("scanHistoryUpdated", handleUpdate);
+  }, []);
+
+  const filteredHistory = scanHistory.filter((item) => {
+    if (filterRange === "all") return true;
+    const now = Date.now();
+    const createdAt = item.createdAt ?? Date.parse(item.date);
+    if (Number.isNaN(createdAt)) return true;
+
+    const ranges = {
+      "24h": 24 * 60 * 60 * 1000,
+      "7d": 7 * 24 * 60 * 60 * 1000,
+      "30d": 30 * 24 * 60 * 60 * 1000,
+      "365d": 365 * 24 * 60 * 60 * 1000,
+    } as const;
+
+    return now - createdAt <= ranges[filterRange];
+  });
+
+  const handleClear = () => {
+    clearScanHistory();
+    setExpandedIds(new Set());
+    setScanHistory([]);
+  };
   
   const toggleExpanded = (id: string) => {
     setExpandedIds(prev => {
@@ -135,12 +104,46 @@ export default function HistoryPage() {
         <CardDescription>
           A log of all your past scans and their results.
         </CardDescription>
+        <div className="mt-4 flex flex-wrap gap-2 items-center justify-between">
+          <div className="flex flex-wrap gap-2">
+            {[{label:"24h", value:"24h"},{label:"Last week", value:"7d"},{label:"Last month", value:"30d"},{label:"Last year", value:"365d"},{label:"All", value:"all"}].map(({label, value}) => (
+              <Button
+                key={value}
+                size="sm"
+                variant={filterRange === value ? "default" : "outline"}
+                onClick={() => setFilterRange(value as typeof filterRange)}
+              >
+                {label}
+              </Button>
+            ))}
+          </div>
+          <Button
+            size="sm"
+            variant="destructive"
+            onClick={handleClear}
+          >
+            Delete All
+          </Button>
+        </div>
       </CardHeader>
       <CardContent>
-        {/* Mobile: Card-based layout */}
-        <div className="space-y-4 md:hidden">
+        {filteredHistory.length === 0 ? (
+          <div className="text-center py-12">
+            <ScanLine className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">No Scan History Yet</h3>
+            <p className="text-sm text-muted-foreground mb-4">
+              Your scan results will appear here after you analyze content in the Quick Scan tab.
+            </p>
+            <p className="text-xs text-muted-foreground">
+              All data is stored locally on your device for privacy.
+            </p>
+          </div>
+        ) : (
+          <>
+            {/* Mobile: Card-based layout */}
+            <div className="space-y-4 md:hidden">
           <TooltipProvider>
-            {scanHistory.map((scan) => {
+              {filteredHistory.map((scan) => {
               const isExpanded = expandedIds.has(scan.id);
               return (
                 <Card key={scan.id} className="overflow-hidden">
@@ -225,8 +228,8 @@ export default function HistoryPage() {
             </TableHeader>
             <TableBody>
               <TooltipProvider>
-                {scanHistory.map((scan) => (
-                  <TableRow key={scan.id}>
+                {filteredHistory.map((scan) => (
+                  <TableRow key={scan.id} className="align-top">
                     <TableCell>
                       <Tooltip>
                         <TooltipTrigger asChild>
@@ -256,6 +259,8 @@ export default function HistoryPage() {
             </TableBody>
           </Table>
         </div>
+          </>
+        )}
       </CardContent>
     </Card>
   );

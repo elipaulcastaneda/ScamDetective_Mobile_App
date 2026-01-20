@@ -5,6 +5,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { handleTextScanClient, type State } from "@/lib/clientActions";
+import { addScanToHistory, getRiskResult, getThreatType } from "@/lib/scanHistory";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
@@ -75,6 +76,23 @@ export function QuickScanForm() {
       const res = await handleTextScanClient(values.content);
       console.log("Scan result:", res); // Debug log
       setState(res);
+      
+      // Save to local history if scan was successful
+      if (res.data) {
+        const preview = values.content.length > 60 
+          ? values.content.substring(0, 60) + "..."
+          : values.content;
+        
+        addScanToHistory({
+          type: "Text",
+          content: preview,
+          fullContent: values.content,
+          origin: "Quick Scan (Mobile App)",
+          risk: res.data.probability,
+          result: getRiskResult(res.data.probability),
+          threatType: getThreatType(values.content, res.data.probability),
+        });
+      }
     } catch (error) {
       console.error("Scan error:", error); // Debug log
       setState({

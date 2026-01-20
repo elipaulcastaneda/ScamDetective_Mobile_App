@@ -33,18 +33,10 @@ export default function ExtensionPage() {
           </div>
            <div>
             <h3 className="text-xl font-semibold mb-4">Download Now</h3>
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-              <Button size="lg" disabled>
+            <div className="flex justify-center">
+              <Button size="lg" disabled className="w-full sm:w-auto">
                 <Download className="mr-2 h-5 w-5" />
                 For Chrome (soon)
-              </Button>
-              <Button size="lg" disabled>
-                <Download className="mr-2 h-5 w-5" />
-                For Firefox (soon)
-              </Button>
-              <Button size="lg" disabled>
-                <Download className="mr-2 h-5 w-5" />
-                Other Browsers (soon)
               </Button>
             </div>
           </div>
