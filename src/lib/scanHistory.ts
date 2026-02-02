@@ -39,6 +39,15 @@ export function getScanHistory(): ScanHistoryItem[] {
   }
 }
 
+// Storage limits
+const MAX_SCANS = 1000;
+const MAX_STORAGE_BYTES = 5 * 1024 * 1024; // 5 MB
+
+// Calculate approximate size of JSON string in bytes
+function getStorageSize(data: string): number {
+  return new Blob([data]).size;
+}
+
 // Add new scan to history
 export function addScanToHistory(scan: Omit<ScanHistoryItem, "id" | "date" | "createdAt">): void {
   if (typeof window === "undefined") return;
@@ -53,12 +62,22 @@ export function addScanToHistory(scan: Omit<ScanHistoryItem, "id" | "date" | "cr
     };
     
     // Add to beginning of array (newest first)
-    const updated = [newScan, ...history];
+    let updated = [newScan, ...history];
     
-    // Keep only last 100 scans to prevent storage bloat
-    const trimmed = updated.slice(0, 100);
+    // Apply limits: max 1,000 scans OR 5 MB storage, whichever is hit first
+    // First trim by count
+    if (updated.length > MAX_SCANS) {
+      updated = updated.slice(0, MAX_SCANS);
+    }
     
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(trimmed));
+    // Then check size and trim oldest items if needed
+    let jsonData = JSON.stringify(updated);
+    while (getStorageSize(jsonData) > MAX_STORAGE_BYTES && updated.length > 1) {
+      updated.pop(); // Remove oldest
+      jsonData = JSON.stringify(updated);
+    }
+    
+    localStorage.setItem(STORAGE_KEY, jsonData);
     
     // Dispatch custom event so other components can update
     window.dispatchEvent(new CustomEvent("scanHistoryUpdated"));

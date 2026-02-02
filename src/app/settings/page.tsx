@@ -13,318 +13,250 @@ import {
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Separator } from "@/components/ui/separator";
-import { Switch } from "@/components/ui/switch";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { User, Monitor, Database, LogOut, Trash2, Download, Lightbulb } from "lucide-react";
+import { clearScanHistory } from "@/lib/scanHistory";
 
 export default function SettingsPage() {
   const { setTheme, theme } = useTheme()
   const [mounted, setMounted] = useState(false)
+  const [username, setUsername] = useState("BaritoneTiger01")
+  const [email, setEmail] = useState("elipaulcastaneda@gmail.com")
 
   useEffect(() => {
     setMounted(true)
   }, [])
 
+  const handleSaveProfile = () => {
+    // TODO: Save profile to backend
+    console.log("Saving profile:", { username, email })
+  }
+
+  const handleExportData = () => {
+    // TODO: Export scan history
+    console.log("Exporting data...")
+  }
+
+  const handleSignOut = () => {
+    // TODO: Sign out logic
+    console.log("Signing out...")
+  }
+
+  const handleDeleteData = () => {
+    if (confirm("Are you sure you want to permanently delete all your stored data? This action cannot be undone.")) {
+      clearScanHistory()
+      console.log("Data deleted")
+    }
+  }
 
   return (
-    <div className="space-y-8">
+    <div className="space-y-6">
       <div>
-        <h1 className="text-3xl font-headline">Settings</h1>
-        <p className="text-muted-foreground">Manage your account and app preferences.</p>
+        <h1 className="text-3xl font-bold font-headline">Settings</h1>
+        <p className="text-muted-foreground">Customize your Scam Detective experience</p>
       </div>
-      <Separator />
 
+      {/* Account Settings */}
       <Card>
         <CardHeader>
-          <CardTitle>Profile Information</CardTitle>
-          <CardDescription>Update your personal details.</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <User className="h-5 w-5" />
+            Account Settings
+          </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="space-y-2">
-              <Label htmlFor="name">Name</Label>
-              <Input id="name" defaultValue="John Doe" />
+              <Label htmlFor="username">Username</Label>
+              <Input 
+                id="username" 
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </div>
             <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" defaultValue="john.doe@example.com" />
+              <Label htmlFor="email">Email Address</Label>
+              <Input 
+                id="email" 
+                type="email" 
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+              />
             </div>
           </div>
+          <Button onClick={handleSaveProfile}>Save Profile</Button>
+          <div className="flex items-start gap-2 mt-4 text-sm text-muted-foreground">
+            <Lightbulb className="h-4 w-4 mt-0.5 flex-shrink-0" />
+            <p>Your email and name are used for Team Management (admin registration and invitations)</p>
+          </div>
         </CardContent>
-        <CardFooter>
-          <Button>Save Changes</Button>
-        </CardFooter>
       </Card>
-      
+
+      {/* Display Theme */}
       <Card>
         <CardHeader>
-          <CardTitle>Two-Factor Authentication</CardTitle>
-          <CardDescription>
-            Add an extra layer of security to your account.
-          </CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <Monitor className="h-5 w-5" />
+            Display Theme
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="two-factor-auth" className="flex flex-col space-y-1">
-              <span>Enable Two-Factor Authentication</span>
-              <span className="font-normal leading-snug text-muted-foreground">
-                You'll be asked for a code from your authenticator app when you sign in.
-              </span>
-            </Label>
-            <Switch id="two-factor-auth" />
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button variant="outline" disabled>Set Up Authenticator App</Button>
-        </CardFooter>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Change Password</CardTitle>
-          <CardDescription>
-            For your security, we recommend choosing a strong password that you
-            don't use elsewhere.
-          </CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="space-y-2">
-            <Label htmlFor="current-password">Current Password</Label>
-            <Input id="current-password" type="password" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
-              <Label htmlFor="new-password">New Password</Label>
-              <Input id="new-password" type="password" />
-            </div>
-            <div className="space-y-2">
-              <Label htmlFor="confirm-password">Confirm New Password</Label>
-              <Input id="confirm-password" type="password" />
-            </div>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button>Change Password</Button>
-        </CardFooter>
-      </Card>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Preferences</CardTitle>
-          <CardDescription>Customize the app to your liking.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <Label>Theme</Label>
-            {mounted && (
-            <RadioGroup
-              value={theme}
-              onValueChange={setTheme}
-              className="grid max-w-md grid-cols-3 gap-8 pt-2"
-            >
-              <div
+          {mounted && (
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              {/* Light Mode */}
+              <button
+                onClick={() => setTheme("light")}
+                className={`relative rounded-xl border-2 p-4 text-left transition-all ${
+                  theme === "light" 
+                    ? "border-blue-500 bg-blue-50/50 dark:bg-blue-950/20" 
+                    : "border-border hover:border-muted-foreground/50"
+                }`}
               >
-                <Label className="[&:has([data-state=checked])>div]:border-primary">
-                  <RadioGroupItem value="light" className="sr-only" />
-                  <div className="items-center rounded-md border-2 border-muted p-1 hover:border-accent">
-                    <div className="space-y-2 rounded-sm bg-[#ecedef] p-2">
-                      <div className="space-y-2 rounded-md bg-white p-2 shadow-sm">
-                        <div className="h-2 w-4/5 rounded-lg bg-[#ecedef]" />
-                        <div className="h-2 w-full rounded-lg bg-[#ecedef]" />
-                      </div>
-                      <div className="flex items-center space-x-2 rounded-md bg-white p-2 shadow-sm">
-                        <div className="h-4 w-4 rounded-full bg-[#ecedef]" />
-                        <div className="h-2 w-full rounded-lg bg-[#ecedef]" />
-                      </div>
-                      <div className="flex items-center space-x-2 rounded-md bg-white p-2 shadow-sm">
-                        <div className="h-4 w-4 rounded-full bg-[#ecedef]" />
-                        <div className="h-2 w-full rounded-lg bg-[#ecedef]" />
-                      </div>
+                {theme === "light" && (
+                  <div className="absolute top-4 right-4">
+                    <span className="inline-flex items-center rounded-full bg-blue-500 px-3 py-1 text-xs font-medium text-white">
+                      Selected
+                    </span>
+                  </div>
+                )}
+                <div className="space-y-3">
+                  <div className="font-semibold text-lg">Light Mode</div>
+                  <p className="text-sm text-muted-foreground">
+                    Bright, high contrast for daytime viewing
+                  </p>
+                  <div className="rounded-lg border bg-card overflow-hidden">
+                    <div className="flex items-center gap-2 border-b bg-background/50 px-3 py-2">
+                      <div className="h-2 w-2 rounded-full bg-red-500" />
+                      <div className="h-2 w-2 rounded-full bg-yellow-500" />
+                      <div className="h-2 w-2 rounded-full bg-green-500" />
+                    </div>
+                    <div className="space-y-2 p-4 bg-white">
+                      <div className="h-2 w-3/4 rounded bg-slate-200" />
+                      <div className="h-2 w-full rounded bg-slate-200" />
+                      <div className="h-2 w-5/6 rounded bg-slate-200" />
                     </div>
                   </div>
-                  <span className="block w-full p-2 text-center font-normal">
-                    Light
-                  </span>
-                </Label>
-              </div>
-              <div
+                  <Button 
+                    variant={theme === "light" ? "default" : "outline"} 
+                    className="w-full"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setTheme("light")
+                    }}
+                  >
+                    {theme === "light" ? "Using Light Mode" : "Use Light Mode"}
+                  </Button>
+                </div>
+              </button>
+
+              {/* Dark Mode */}
+              <button
+                onClick={() => setTheme("dark")}
+                className={`relative rounded-xl border-2 p-4 text-left transition-all ${
+                  theme === "dark" 
+                    ? "border-blue-500 bg-blue-50/50 dark:bg-blue-950/20" 
+                    : "border-border hover:border-muted-foreground/50"
+                }`}
               >
-                <Label className="[&:has([data-state=checked])>div]:border-primary">
-                  <RadioGroupItem value="dark" className="sr-only" />
-                  <div className="items-center rounded-md border-2 border-muted bg-popover p-1 hover:border-accent">
-                    <div className="space-y-2 rounded-sm bg-slate-950 p-2">
-                      <div className="space-y-2 rounded-md bg-slate-800 p-2 shadow-sm">
-                        <div className="h-2 w-4/5 rounded-lg bg-slate-400" />
-                        <div className="h-2 w-full rounded-lg bg-slate-400" />
-                      </div>
-                      <div className="flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-sm">
-                        <div className="h-4 w-4 rounded-full bg-slate-400" />
-                        <div className="h-2 w-full rounded-lg bg-slate-400" />
-                      </div>
-                      <div className="flex items-center space-x-2 rounded-md bg-slate-800 p-2 shadow-sm">
-                        <div className="h-4 w-4 rounded-full bg-slate-400" />
-                        <div className="h-2 w-full rounded-lg bg-slate-400" />
-                      </div>
+                {theme === "dark" && (
+                  <div className="absolute top-4 right-4">
+                    <span className="inline-flex items-center rounded-full bg-blue-500 px-3 py-1 text-xs font-medium text-white">
+                      Selected
+                    </span>
+                  </div>
+                )}
+                <div className="space-y-3">
+                  <div className="font-semibold text-lg">Dark Mode</div>
+                  <p className="text-sm text-muted-foreground">
+                    Dimmed UI with light text for low light
+                  </p>
+                  <div className="rounded-lg border bg-card overflow-hidden">
+                    <div className="flex items-center gap-2 border-b bg-slate-800 px-3 py-2">
+                      <div className="h-2 w-2 rounded-full bg-red-500" />
+                      <div className="h-2 w-2 rounded-full bg-yellow-500" />
+                      <div className="h-2 w-2 rounded-full bg-green-500" />
+                    </div>
+                    <div className="space-y-2 p-4 bg-slate-900">
+                      <div className="h-2 w-3/4 rounded bg-slate-700" />
+                      <div className="h-2 w-full rounded bg-slate-700" />
+                      <div className="h-2 w-5/6 rounded bg-slate-700" />
                     </div>
                   </div>
-                  <span className="block w-full p-2 text-center font-normal">
-                    Dark
-                  </span>
-                </Label>
-              </div>
-              <div
-              >
-                <Label className="[&:has([data-state=checked])>div]:border-primary">
-                  <RadioGroupItem value="system" className="sr-only" />
-                  <div className="items-center rounded-md border-2 border-muted p-1 hover:border-accent">
-                     <div className="space-y-2 rounded-sm bg-[#ecedef] p-2">
-                       <div className="h-14 w-full rounded-lg bg-slate-400/50" />
-                     </div>
-                  </div>
-                  <span className="block w-full p-2 text-center font-normal">
-                    System
-                  </span>
-                </Label>
-              </div>
-            </RadioGroup>
-            )}
-          </div>
-          <Separator />
-          <h3 className="text-lg font-medium">Scanning Preferences</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between space-x-2">
-              <Label htmlFor="auto-scanning" className="flex flex-col space-y-1">
-                <span>Auto-scanning</span>
-                <span className="font-normal leading-snug text-muted-foreground">
-                  Automatically scan content when using the browser extension.
-                </span>
-              </Label>
-              <Switch id="auto-scanning" defaultChecked />
+                  <Button 
+                    variant={theme === "dark" ? "default" : "outline"} 
+                    className="w-full"
+                    onClick={(e) => {
+                      e.stopPropagation()
+                      setTheme("dark")
+                    }}
+                  >
+                    {theme === "dark" ? "Using Dark Mode" : "Use Dark Mode"}
+                  </Button>
+                </div>
+              </button>
             </div>
-            <div className="flex items-center justify-between space-x-2">
-              <Label htmlFor="deep-scanning" className="flex flex-col space-y-1">
-                <span>Deep Scanning</span>
-                <span className="font-normal leading-snug text-muted-foreground">
-                  Enable more thorough analysis, which may take longer.
-                </span>
-              </Label>
-              <Switch id="deep-scanning" />
-            </div>
-            <div className="flex items-center justify-between space-x-2">
-              <Label htmlFor="scan-interval" className="flex flex-col space-y-1">
-                <span>Background Scan Interval</span>
-                <span className="font-normal leading-snug text-muted-foreground">
-                  How often to automatically scan for threats in the background.
-                </span>
-              </Label>
-              <Select defaultValue="15m">
-                <SelectTrigger id="scan-interval" className="w-[180px]">
-                  <SelectValue placeholder="Select interval" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="5m">Every 5 minutes</SelectItem>
-                  <SelectItem value="15m">Every 15 minutes</SelectItem>
-                  <SelectItem value="30m">Every 30 minutes</SelectItem>
-                  <SelectItem value="1h">Every hour</SelectItem>
-                  <SelectItem value="never">Never</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-          </div>
+          )}
         </CardContent>
-        <CardFooter>
-          <Button>Save Preferences</Button>
-        </CardFooter>
-      </Card>
-      <Card>
-        <CardHeader>
-          <CardTitle>Notifications</CardTitle>
-          <CardDescription>Choose what you want to be notified about.</CardDescription>
-        </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="email-alerts" className="flex flex-col space-y-1">
-              <span>Email Alerts</span>
-              <span className="font-normal leading-snug text-muted-foreground">
-                Receive an email for critical security events.
-              </span>
-            </Label>
-            <Switch id="email-alerts" />
-          </div>
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="browser-notifications" className="flex flex-col space-y-1">
-              <span>Browser Notifications</span>
-              <span className="font-normal leading-snug text-muted-foreground">
-                Get instant alerts for suspicious sites via your browser.
-              </span>
-            </Label>
-            <Switch id="browser-notifications" defaultChecked />
-          </div>
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="weekly-reports" className="flex flex-col space-y-1">
-              <span>Weekly Reports</span>
-              <span className="font-normal leading-snug text-muted-foreground">
-                Receive a weekly summary of your protection status.
-              </span>
-            </Label>
-            <Switch id="weekly-reports" />
-          </div>
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="security-updates" className="flex flex-col space-y-1">
-              <span>Security Updates</span>
-              <span className="font-normal leading-snug text-muted-foreground">
-                Be notified when new security features or updates are available.
-              </span>
-            </Label>
-            <Switch id="security-updates" defaultChecked />
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button>Save Notification Settings</Button>
-        </CardFooter>
       </Card>
 
+      {/* Privacy & Data */}
       <Card>
         <CardHeader>
-          <CardTitle>Privacy and Data</CardTitle>
-          <CardDescription>Manage how your data is used and download your information.</CardDescription>
+          <CardTitle className="flex items-center gap-2">
+            <Database className="h-5 w-5" />
+            Privacy & Data
+          </CardTitle>
         </CardHeader>
-        <CardContent className="space-y-4">
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="share-anonymous-data" className="flex flex-col space-y-1">
-              <span>Share Anonymous Data</span>
-              <span className="font-normal leading-snug text-muted-foreground">
-                Help improve our services by allowing us to collect anonymous usage data.
-              </span>
-            </Label>
-            <Switch id="share-anonymous-data" defaultChecked />
-          </div>
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="improve-detection" className="flex flex-col space-y-1">
-              <span>Improve Scam Detection</span>
-              <span className="font-normal leading-snug text-muted-foreground">
-                Allow reported content to be used to train our detection models.
-              </span>
-            </Label>
-            <Switch id="improve-detection" defaultChecked />
-          </div>
-          <div className="flex items-center justify-between space-x-2">
-            <Label htmlFor="marketing-emails" className="flex flex-col space-y-1">
-              <span>Marketing Emails</span>
-              <span className="font-normal leading-snug text-muted-foreground">
-                Receive occasional emails about new features and promotions.
-              </span>
-            </Label>
-            <Switch id="marketing-emails" />
+        <CardContent>
+          <div className="flex items-center justify-between">
+            <div>
+              <p className="font-medium">Export Data</p>
+              <p className="text-sm text-muted-foreground">
+                Download a copy of your scan history and reports
+              </p>
+            </div>
+            <Button variant="outline" onClick={handleExportData}>
+              <Download className="h-4 w-4 mr-2" />
+              Export
+            </Button>
           </div>
         </CardContent>
-        <CardFooter className="flex-col items-start gap-4">
-          <Button variant="outline">Export My Data</Button>
-          <p className="text-xs text-muted-foreground">
-            You can request an export of your personal data. This process may take up to 24 hours.
-          </p>
-        </CardFooter>
+      </Card>
+
+      {/* Sign Out */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <LogOut className="h-5 w-5" />
+            Sign Out
+          </CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <p className="text-muted-foreground">Sign out of your account on this device</p>
+          <Button variant="outline" onClick={handleSignOut}>
+            <LogOut className="h-4 w-4 mr-2" />
+            Sign Out
+          </Button>
+        </CardContent>
+      </Card>
+
+      {/* Delete Data */}
+      <Card className="border-red-200 dark:border-red-900">
+        <CardHeader>
+          <CardTitle className="text-red-600 dark:text-red-400">Delete Data</CardTitle>
+        </CardHeader>
+        <CardContent className="space-y-4">
+          <div>
+            <p className="font-medium">Delete Data</p>
+            <p className="text-sm text-muted-foreground">
+              Permanently delete all your stored data. This does not delete your account.
+            </p>
+          </div>
+          <Button variant="destructive" onClick={handleDeleteData}>
+            <Trash2 className="h-4 w-4 mr-2" />
+            Delete Data
+          </Button>
+        </CardContent>
       </Card>
     </div>
   );

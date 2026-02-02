@@ -29,13 +29,13 @@ import { Logo } from "./logo";
 import { cn } from "@/lib/utils";
 
 const menuItems = [
-  { href: "/dashboard", icon: LayoutGrid, label: "Dashboard" },
+  // { href: "/dashboard", icon: LayoutGrid, label: "Dashboard" },
   { href: "/quick-scan", icon: ScanLine, label: "Quick Scan" },
   { href: "/history", icon: History, label: "Scan History" },
-  { href: "/team", icon: Users, label: "Team Admin" },
+  // { href: "/team", icon: Users, label: "Team Admin" },
   { href: "/report", icon: Flag, label: "Report a Scam" },
   { href: "/extension", icon: Puzzle, label: "Web Extension" },
-  { href: "/subscription", icon: CreditCard, label: "Subscription" },
+  // { href: "/subscription", icon: CreditCard, label: "Subscription" },
   { href: "/settings", icon: Settings, label: "Settings" },
 ];
 
@@ -98,8 +98,8 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         <main className="flex-1 p-4 md:p-6 lg:p-8 pb-20 md:pb-4">{children}</main>
         
         {/* Mobile Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t md:hidden overflow-x-auto">
-          <div className="flex items-center h-16 min-w-max px-2">
+        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t md:hidden">
+          <div className="flex items-center h-16 w-full">
             {mobileMenuItems.map((item) => {
               const isActive = pathname === item.href;
               return (
@@ -107,7 +107,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
                   key={item.href}
                   href={item.href}
                   className={cn(
-                    "flex flex-col items-center justify-center px-4 h-full gap-1 text-xs transition-colors whitespace-nowrap",
+                    "flex flex-1 flex-col items-center justify-center h-full gap-1 text-xs transition-colors",
                     isActive 
                       ? "text-primary font-medium" 
                       : "text-muted-foreground hover:text-foreground"
