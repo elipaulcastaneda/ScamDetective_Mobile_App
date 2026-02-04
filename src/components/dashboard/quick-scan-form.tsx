@@ -6,6 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
 import { handleTextScanClient, type State } from "@/lib/clientActions";
 import { addScanToHistory, getRiskResult, getThreatType } from "@/lib/scanHistory";
+import { saveScanToSupabase } from "@/lib/supabaseHistory";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import {
@@ -91,6 +92,13 @@ export function QuickScanForm() {
           risk: res.data.probability,
           result: getRiskResult(res.data.probability),
           threatType: getThreatType(values.content, res.data.probability),
+        });
+
+        void saveScanToSupabase({
+          content: values.content,
+          confidence: res.data.probability,
+          predictedClass: res.data.predicted_class,
+          type: "text",
         });
       }
     } catch (error) {

@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Badge } from "@/components/ui/badge";
 import {
   Card,
@@ -26,6 +26,7 @@ import {
 import { Button } from "@/components/ui/button";
 import { FileText, Link as LinkIcon, Mail, Phone, ChevronDown, ScanLine } from "lucide-react";
 import { getScanHistory, clearScanHistory, type ScanHistoryItem } from "@/lib/scanHistory";
+import { clearSupabaseScanHistory, getSupabaseScanHistory } from "@/lib/supabaseHistory";
 
 const getRiskBadgeVariant = (result: string) => {
   switch (result) {
@@ -49,18 +50,46 @@ export default function HistoryPage() {
   const [expandedIds, setExpandedIds] = useState<Set<string>>(new Set());
   const [scanHistory, setScanHistory] = useState<ScanHistoryItem[]>([]);
   const [filterRange, setFilterRange] = useState<"24h" | "7d" | "30d" | "365d" | "all">("all");
+  const [usingSupabase, setUsingSupabase] = useState(false);
+  const [loading, setLoading] = useState(true);
+  const usingSupabaseRef = useRef(false);
   
-  // Load scan history from local storage
   useEffect(() => {
-    setScanHistory(getScanHistory());
-    
-    // Listen for updates
-    const handleUpdate = () => {
+    let active = true;
+
+    const loadHistory = async () => {
+      setLoading(true);
+      const supabaseHistory = await getSupabaseScanHistory();
+
+      if (!active) return;
+
+      if (supabaseHistory) {
+        usingSupabaseRef.current = true;
+        setUsingSupabase(true);
+        setScanHistory(supabaseHistory);
+        setLoading(false);
+        return;
+      }
+
+      usingSupabaseRef.current = false;
+      setUsingSupabase(false);
       setScanHistory(getScanHistory());
+      setLoading(false);
     };
-    
+
+    loadHistory();
+
+    const handleUpdate = () => {
+      if (!usingSupabaseRef.current) {
+        setScanHistory(getScanHistory());
+      }
+    };
+
     window.addEventListener("scanHistoryUpdated", handleUpdate);
-    return () => window.removeEventListener("scanHistoryUpdated", handleUpdate);
+    return () => {
+      active = false;
+      window.removeEventListener("scanHistoryUpdated", handleUpdate);
+    };
   }, []);
 
   const filteredHistory = scanHistory.filter((item) => {
@@ -79,8 +108,13 @@ export default function HistoryPage() {
     return now - createdAt <= ranges[filterRange];
   });
 
-  const handleClear = () => {
-    clearScanHistory();
+  const handleClear = async () => {
+    if (usingSupabaseRef.current) {
+      await clearSupabaseScanHistory();
+    } else {
+      clearScanHistory();
+    }
+
     setExpandedIds(new Set());
     setScanHistory([]);
   };
@@ -104,6 +138,9 @@ export default function HistoryPage() {
         <CardDescription>
           A log of all your past scans and their results.
         </CardDescription>
+        <p className="text-xs text-muted-foreground">
+          {usingSupabase ? "Synced from Supabase" : "Stored locally on this device"}
+        </p>
         <div className="mt-4 flex flex-wrap gap-2 items-center justify-between">
           <div className="flex flex-wrap gap-2">
             {[{label:"24h", value:"24h"},{label:"Last week", value:"7d"},{label:"Last month", value:"30d"},{label:"Last year", value:"365d"},{label:"All", value:"all"}].map(({label, value}) => (
@@ -127,7 +164,13 @@ export default function HistoryPage() {
         </div>
       </CardHeader>
       <CardContent>
-        {filteredHistory.length === 0 ? (
+        {loading ? (
+          <div className="text-center py-12">
+            <ScanLine className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
+            <h3 className="text-lg font-semibold mb-2">Loading Scan History</h3>
+            <p className="text-sm text-muted-foreground mb-4">Fetching your scans...</p>
+          </div>
+        ) : filteredHistory.length === 0 ? (
           <div className="text-center py-12">
             <ScanLine className="h-12 w-12 text-muted-foreground mx-auto mb-4" />
             <h3 className="text-lg font-semibold mb-2">No Scan History Yet</h3>
@@ -135,7 +178,9 @@ export default function HistoryPage() {
               Your scan results will appear here after you analyze content in the Quick Scan tab.
             </p>
             <p className="text-xs text-muted-foreground">
-              All data is stored locally on your device for privacy.
+              {usingSupabase
+                ? "No synced scans were found for your account."
+                : "All data is stored locally on your device for privacy."}
             </p>
           </div>
         ) : (

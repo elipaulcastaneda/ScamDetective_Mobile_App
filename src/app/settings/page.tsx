@@ -15,36 +15,195 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Separator } from "@/components/ui/separator";
 import { User, Monitor, Database, LogOut, Trash2, Download, Lightbulb } from "lucide-react";
-import { clearScanHistory } from "@/lib/scanHistory";
+import { clearScanHistory, getScanHistory } from "@/lib/scanHistory";
+import { decryptPayload } from "@/lib/crypto";
+import { getSupabaseClient } from "@/lib/supabaseClient";
+import {
+  clearSupabaseReportedEmails,
+  clearSupabaseScanHistory,
+  getSupabaseReportedEmails,
+  getSupabaseScanRows,
+} from "@/lib/supabaseHistory";
 
 export default function SettingsPage() {
   const { setTheme, theme } = useTheme()
   const [mounted, setMounted] = useState(false)
   const [username, setUsername] = useState("BaritoneTiger01")
   const [email, setEmail] = useState("elipaulcastaneda@gmail.com")
+  const [isExporting, setIsExporting] = useState(false)
 
   useEffect(() => {
     setMounted(true)
+
+    const loadUser = async () => {
+      const supabase = getSupabaseClient()
+      if (!supabase) return
+
+      const { data } = await supabase.auth.getUser()
+      if (!data?.user) return
+
+      if (data.user.email) setEmail(data.user.email)
+      const metaName = data.user.user_metadata?.username || data.user.user_metadata?.name
+      if (metaName) setUsername(metaName)
+    }
+
+    loadUser()
   }, [])
 
-  const handleSaveProfile = () => {
-    // TODO: Save profile to backend
-    console.log("Saving profile:", { username, email })
+  const buildCsv = (rows: Record<string, unknown>[], headers?: string[]) => {
+    const keys = headers ?? (rows.length > 0 ? Object.keys(rows[0]) : [])
+    const escapeValue = (value: unknown) => {
+      if (value === null || value === undefined) return ""
+      const str = String(value)
+      return /[",\n]/.test(str) ? `"${str.replace(/"/g, '""')}"` : str
+    }
+
+    const lines = [keys.join(",")]
+    for (const row of rows) {
+      lines.push(keys.map((key) => escapeValue(row[key])).join(","))
+    }
+
+    return `${lines.join("\n")}\n`
   }
 
-  const handleExportData = () => {
-    // TODO: Export scan history
-    console.log("Exporting data...")
+  const downloadCsv = (filename: string, csv: string) => {
+    const blob = new Blob([csv], { type: "text/csv;charset=utf-8;" })
+    const url = URL.createObjectURL(blob)
+    const link = document.createElement("a")
+    link.href = url
+    link.setAttribute("download", filename)
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    URL.revokeObjectURL(url)
   }
 
-  const handleSignOut = () => {
-    // TODO: Sign out logic
-    console.log("Signing out...")
+  const handleSaveProfile = async () => {
+    const supabase = getSupabaseClient()
+    if (!supabase) {
+      console.log("Saving profile:", { username, email })
+      return
+    }
+
+    const { data } = await supabase.auth.getUser()
+    if (!data?.user) {
+      console.log("No authenticated user")
+      return
+    }
+
+    const updatePayload: { email?: string; data?: { username?: string } } = {
+      data: { username },
+    }
+
+    if (email && email !== data.user.email) {
+      updatePayload.email = email
+    }
+
+    const { error } = await supabase.auth.updateUser(updatePayload)
+    if (error) {
+      console.error("Failed to update profile", error)
+    }
   }
 
-  const handleDeleteData = () => {
+  const handleExportData = async () => {
+    if (isExporting) return
+    setIsExporting(true)
+
+    try {
+      const supabase = getSupabaseClient()
+
+      if (!supabase) {
+        const localRows = getScanHistory().map((item) => ({
+          id: item.id,
+          type: item.type,
+          content: item.content,
+          fullContent: item.fullContent,
+          origin: item.origin,
+          risk: item.risk,
+          result: item.result,
+          threatType: item.threatType,
+          date: item.date,
+        }))
+        const csv = buildCsv(localRows, [
+          "id",
+          "type",
+          "content",
+          "fullContent",
+          "origin",
+          "risk",
+          "result",
+          "threatType",
+          "date",
+        ])
+        downloadCsv("scan_history.csv", csv)
+        return
+      }
+
+      const [scanRows, reportRows] = await Promise.all([
+        getSupabaseScanRows(),
+        getSupabaseReportedEmails(),
+      ])
+
+      if (scanRows && scanRows.length > 0) {
+        const enrichedRows = await Promise.all(
+          scanRows.map(async (row) => ({
+            ...row,
+            input: (await decryptPayload(row.input)) ?? row.input,
+          }))
+        )
+        downloadCsv(
+          "scan_history.csv",
+          buildCsv(enrichedRows, [
+            "id",
+            "type",
+            "input",
+            "confidence",
+            "scan_date",
+            "userid",
+            "result",
+          ])
+        )
+      }
+
+      if (reportRows && reportRows.length > 0) {
+        downloadCsv(
+          "reported_emails.csv",
+          buildCsv(reportRows as Record<string, unknown>[], [
+            "id",
+            "userid",
+            "created_at",
+            "type",
+            "content",
+            "description",
+          ])
+        )
+      }
+    } finally {
+      setIsExporting(false)
+    }
+  }
+
+  const handleSignOut = async () => {
+    const supabase = getSupabaseClient()
+    if (!supabase) {
+      console.log("Signing out...")
+      return
+    }
+
+    const { error } = await supabase.auth.signOut()
+    if (error) {
+      console.error("Failed to sign out", error)
+    }
+  }
+
+  const handleDeleteData = async () => {
     if (confirm("Are you sure you want to permanently delete all your stored data? This action cannot be undone.")) {
       clearScanHistory()
+
+      await Promise.all([
+        clearSupabaseScanHistory(),
+        clearSupabaseReportedEmails(),
+      ])
       console.log("Data deleted")
     }
   }
@@ -215,9 +374,9 @@ export default function SettingsPage() {
                 Download a copy of your scan history and reports
               </p>
             </div>
-            <Button variant="outline" onClick={handleExportData}>
+            <Button variant="outline" onClick={handleExportData} disabled={isExporting}>
               <Download className="h-4 w-4 mr-2" />
-              Export
+              {isExporting ? "Exporting..." : "Export"}
             </Button>
           </div>
         </CardContent>

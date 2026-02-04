@@ -40,6 +40,11 @@ next-env.d.ts
 .genkit/*
 .env*
 
+# Android signing
+*.keystore
+*.jks
+keystore.properties
+
 # firebase
 firebase-debug.log
 firestore-debug.log
