@@ -33,7 +33,7 @@ const menuItems = [
   { href: "/quick-scan", icon: ScanLine, label: "Quick Scan" },
   { href: "/history", icon: History, label: "Scan History" },
   // { href: "/team", icon: Users, label: "Team Admin" },
-  { href: "/report", icon: Flag, label: "Report a Scam" },
+  // { href: "/report", icon: Flag, label: "Report a Scam" },
   { href: "/extension", icon: Puzzle, label: "Web Extension" },
   // { href: "/subscription", icon: CreditCard, label: "Subscription" },
   { href: "/settings", icon: Settings, label: "Settings" },
