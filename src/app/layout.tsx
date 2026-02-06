@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
-import { AppLayout } from "@/components/app-layout";
 import { Toaster } from "@/components/ui/toaster";
 import { ThemeProvider } from "@/components/theme-provider";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { ProtectedLayout } from "@/components/protected-layout";
 
 export const metadata: Metadata = {
   title: "ScamDetective",
@@ -31,10 +32,12 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <AppLayout>
-            {children}
-          </AppLayout>
-          <Toaster />
+          <AuthProvider>
+            <ProtectedLayout>
+              {children}
+            </ProtectedLayout>
+            <Toaster />
+          </AuthProvider>
         </ThemeProvider>
       </body>
     </html>

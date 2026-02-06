@@ -15,10 +15,12 @@ import { Label } from "@/components/ui/label";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { AlertCircle, Loader2 } from "lucide-react";
 import { getSupabaseClient } from "@/lib/supabaseClient";
+import { useAuth } from "@/contexts/AuthContext";
 import Link from "next/link";
 
 export default function SignInPage() {
   const router = useRouter();
+  const { refreshAuth } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
@@ -82,8 +84,8 @@ export default function SignInPage() {
         localStorage.setItem("refreshToken", data.session.refresh_token);
         localStorage.setItem("profile", JSON.stringify(data.user));
 
-        // Dispatch storage event for AuthContext to pick up
-        window.dispatchEvent(new StorageEvent("storage"));
+        // Refresh auth context to update state
+        await refreshAuth();
 
         // Redirect to app
         router.push("/quick-scan");

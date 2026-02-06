@@ -80,7 +80,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </SidebarFooter>
       </Sidebar>
       
-      <SidebarInset className="flex flex-col">
+      <SidebarInset className="flex flex-col md:h-screen">
         {/* Mobile Header */}
         <header className="flex items-center justify-between p-4 border-b md:hidden">
           <div className="flex items-center gap-2">
@@ -95,32 +95,32 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
         </header>
         
         {/* Main Content - with bottom padding on mobile for nav */}
-        <main className="flex-1 p-4 md:p-6 lg:p-8 pb-20 md:pb-4">{children}</main>
-        
-        {/* Mobile Bottom Navigation */}
-        <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t md:hidden">
-          <div className="flex items-center h-16 w-full">
-            {mobileMenuItems.map((item) => {
-              const isActive = pathname === item.href;
-              return (
-                <Link
-                  key={item.href}
-                  href={item.href}
-                  className={cn(
-                    "flex flex-1 flex-col items-center justify-center h-full gap-1 text-xs transition-colors",
-                    isActive 
-                      ? "text-primary font-medium" 
-                      : "text-muted-foreground hover:text-foreground"
-                  )}
-                >
-                  <item.icon className="h-5 w-5" />
-                  <span className="text-[10px]">{item.label.split(" ")[0]}</span>
-                </Link>
-              );
-            })}
-          </div>
-        </nav>
+        <main className="flex-1 overflow-y-auto p-4 md:p-6 lg:p-8 pb-24 md:pb-4">{children}</main>
       </SidebarInset>
+      
+      {/* Mobile Bottom Navigation - Outside SidebarInset */}
+      <nav className="fixed bottom-0 left-0 right-0 z-50 bg-background border-t md:hidden h-16">
+        <div className="flex items-center h-full w-full">
+          {mobileMenuItems.map((item) => {
+            const isActive = pathname === item.href;
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={cn(
+                  "flex flex-1 flex-col items-center justify-center h-full gap-1 text-xs transition-colors",
+                  isActive 
+                    ? "text-primary font-medium" 
+                    : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <item.icon className="h-5 w-5" />
+                <span className="text-[10px]">{item.label.split(" ")[0]}</span>
+              </Link>
+            );
+          })}
+        </div>
+      </nav>
     </SidebarProvider>
   );
 }

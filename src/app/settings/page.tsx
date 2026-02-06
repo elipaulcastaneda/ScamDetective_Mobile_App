@@ -18,6 +18,7 @@ import { User, Monitor, Database, LogOut, Trash2, Download, Lightbulb } from "lu
 import { clearScanHistory, getScanHistory } from "@/lib/scanHistory";
 import { decryptPayload } from "@/lib/crypto";
 import { getSupabaseClient } from "@/lib/supabaseClient";
+import { useAuth } from "@/contexts/AuthContext";
 import {
   clearSupabaseReportedEmails,
   clearSupabaseScanHistory,
@@ -27,6 +28,7 @@ import {
 
 export default function SettingsPage() {
   const { setTheme, theme } = useTheme()
+  const { signOut } = useAuth()
   const [mounted, setMounted] = useState(false)
   const [username, setUsername] = useState("BaritoneTiger01")
   const [email, setEmail] = useState("elipaulcastaneda@gmail.com")
@@ -184,16 +186,7 @@ export default function SettingsPage() {
   }
 
   const handleSignOut = async () => {
-    const supabase = getSupabaseClient()
-    if (!supabase) {
-      console.log("Signing out...")
-      return
-    }
-
-    const { error } = await supabase.auth.signOut()
-    if (error) {
-      console.error("Failed to sign out", error)
-    }
+    await signOut()
   }
 
   const handleDeleteData = async () => {
