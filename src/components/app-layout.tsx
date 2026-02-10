@@ -27,6 +27,7 @@ import Link from "next/link";
 import { Button } from "./ui/button";
 import { Logo } from "./logo";
 import { cn } from "@/lib/utils";
+import { UpdateCheck } from "@/components/update-check";
 
 const menuItems = [
   // { href: "/dashboard", icon: LayoutGrid, label: "Dashboard" },
@@ -81,6 +82,7 @@ export function AppLayout({ children }: { children: React.ReactNode }) {
       </Sidebar>
       
       <SidebarInset className="flex flex-col md:h-screen">
+        <UpdateCheck />
         {/* Mobile Header */}
         <header className="flex items-center justify-between p-4 border-b md:hidden">
           <div className="flex items-center gap-2">
